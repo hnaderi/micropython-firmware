@@ -1,4 +1,5 @@
-{ stdenv, lib, fetchFromGitHub, pkg-config, cmake, python3, libffi, readline }:
+{ stdenv, lib, fetchFromGitHub, pkg-config, cmake, python3, libffi, readline
+, gcc-arm-embedded }:
 
 stdenv.mkDerivation rec {
   pname = "firmware";
@@ -24,7 +25,7 @@ stdenv.mkDerivation rec {
 
   sourceRoot = "micropython";
 
-  nativeBuildInputs = [ pkg-config python3 ];
+  nativeBuildInputs = [ pkg-config python3 gcc-arm-embedded ];
 
   buildInputs = [ libffi readline cmake ];
   dontUseCmakeConfigure = true;
@@ -34,10 +35,10 @@ stdenv.mkDerivation rec {
     make -C mpy-cross
     make -C ports/unix
 
-    cd ports/rp2
-    # make submodules
+    pushd ports/rp2
     make clean
-    make
+    make USER_C_MODULES=../../../st7789_mpy/st7789/micropython.cmake
+    popd
 
     runHook postBuild
   '';
@@ -62,6 +63,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
     install -Dm755 ports/unix/build-standard/micropython -t $out/bin
     install -Dm755 mpy-cross/build/mpy-cross -t $out/bin
+    cp ports/rp2/build-RPI_PICO/firmware.uf2 $out/
     runHook postInstall
   '';
 

@@ -11,5 +11,8 @@
       let
         pkgs = import nixpkgs { system = system; };
         mpy = pkgs.callPackage ./firmware.nix { };
-      in { devShells.default = pkgs.mkShell { packages = [ mpy ]; }; });
+      in {
+        packages = { firmware = mpy; };
+        devShells.default = pkgs.mkShell { packages = [ mpy ]; };
+      });
 }
