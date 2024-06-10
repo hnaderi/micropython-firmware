@@ -1,14 +1,14 @@
-{ stdenv, lib, fetchFromGitHub, pkg-config, python3, libffi, readline }:
+{ stdenv, lib, fetchFromGitHub, pkg-config, cmake, python3, libffi, readline }:
 
 stdenv.mkDerivation rec {
   pname = "firmware";
-  version = "1.22.2";
+  version = "0.0.1";
 
   srcs = [
     (fetchFromGitHub {
       owner = "micropython";
       repo = "micropython";
-      rev = "v${version}";
+      rev = "v1.22.2";
       sha256 = "sha256-sdok17HvKub/sI+8cAIIDaLD/3mu8yXXqrTOej8/UfU=";
       fetchSubmodules = true;
       name = "micropython";
@@ -26,13 +26,19 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkg-config python3 ];
 
-  buildInputs = [ libffi readline ];
+  buildInputs = [ libffi readline cmake ];
+  dontUseCmakeConfigure = true;
 
   buildPhase = ''
     runHook preBuild
     make -C mpy-cross
     make -C ports/unix
-    make -C ports/rp2
+
+    cd ports/rp2
+    # make submodules
+    make clean
+    make
+
     runHook postBuild
   '';
 
