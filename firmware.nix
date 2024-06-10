@@ -66,13 +66,4 @@ stdenv.mkDerivation rec {
     cp ports/rp2/build-RPI_PICO/firmware.uf2 $out/
     runHook postInstall
   '';
-
-  meta = with lib; {
-    description =
-      "A lean and efficient Python implementation for microcontrollers and constrained systems";
-    homepage = "https://micropython.org";
-    platforms = platforms.unix;
-    license = licenses.mit;
-    maintainers = with maintainers; [ prusnak sgo ];
-  };
 }
